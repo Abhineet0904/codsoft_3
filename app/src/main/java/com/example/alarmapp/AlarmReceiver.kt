@@ -40,13 +40,13 @@ class AlarmReceiver : BroadcastReceiver() {
             start()
         }
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            stopAlarm(context)
-        }, 60*1000)
-
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = buildNotification(context, alarmTime)
         notificationManager.notify(NOTIFICATION_ID, notification)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            stopAlarm(context)
+        }, 60*1000)
     }
 
 
