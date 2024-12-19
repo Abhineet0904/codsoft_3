@@ -164,11 +164,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayScheduledAlarms() {
 
-        //RETRIEVES THE SHARED PREFERENCES.
+        /*RETRIEVES THE SHARED PREFERENCES. "Context.MODE_PRIVATE" ENSURES THAT THIS PREFERENCE FILE
+        REMAINS PRIVATE TO THIS APP AND CANNOT BE ACCESSED BY OTHER APPS. */
         val sharedPreferences = getSharedPreferences("Alarms scheduled", Context.MODE_PRIVATE)
+
 
         //FETCHES THE SAVED ALARM'S JSON STRING FROM THE RETRIEVED SHARED PREFERENCES.
         val alarmJSON = sharedPreferences.getString("Alarms", null)
+
 
         //CHECKS IF THE ALARM DATA EXISTS, OR THERE IS ATLEAST ONE ALARM STORED IN THE SHARED PREFERENCES.
         if (alarmJSON != null)
@@ -304,9 +307,17 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updatePreferences() {
+
+        //RETRIEVES THE SHARED PREFERENCES OF THE NAME "Alarms Scheduled".
         val sharedPreferences = getSharedPreferences("Alarms scheduled", Context.MODE_PRIVATE)
+
+        //RETURNS AN OBJECT THAT ALLOWS US TO MODIFY THE CONTENTS OF THE SHARED PREFERENCES FILE.
         val editor = sharedPreferences.edit()
+
+        //"Gson().toJson(alarms)" CONVERTS THE "alarms" list into a JSON STRING.
         val alarmJSON = Gson().toJson(alarms)
+
+        //THE JSON STRING IS STORED IN THE SHARED PREFERENCES FILE USING THE "Alarms" key.
         editor.putString("Alarms", alarmJSON)
         editor.apply()
     }
