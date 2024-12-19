@@ -73,10 +73,10 @@ class MainActivity : AppCompatActivity() {
         displayScheduledAlarms()
 
 
-        ringtonePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK && result.data != null)
+        ringtonePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK && it.data != null)
             {
-                val uri = result.data!!.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                val uri = it.data!!.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
                 if (uri != null)
                 {
                     val updatedAlarm = Alarm(
@@ -111,6 +111,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     private fun createNotification(context: Context) {
 
         val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH).apply {
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
+
 
 
 
@@ -139,6 +141,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     private fun displayScheduledAlarms() {
         val sharedPreferences = getSharedPreferences("Alarms scheduled", Context.MODE_PRIVATE)
         val alarmJSON = sharedPreferences.getString("Alarms", null)
@@ -150,6 +153,7 @@ class MainActivity : AppCompatActivity() {
             alarms.sortBy { it.time }
         }
     }
+
 
 
 
@@ -204,6 +208,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     private fun setAlarm(alarm: Alarm) {
 
         if (alarm.time < System.currentTimeMillis()) {
@@ -235,12 +240,14 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     private fun saveAlarms(alarm: Alarm) {
         alarms.add(alarm)
         updatePreferences()
         alarms.sortBy { it.time }
         alarmAdapter.notifyDataSetChanged()
     }
+
 
 
 
@@ -251,6 +258,7 @@ class MainActivity : AppCompatActivity() {
         editor.putString("Alarms", alarmJSON)
         editor.apply()
     }
+
 
 
 
@@ -294,6 +302,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
 
 
