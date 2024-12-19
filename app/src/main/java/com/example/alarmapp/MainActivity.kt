@@ -276,12 +276,14 @@ class MainActivity : AppCompatActivity() {
                 alarm.isEnabled = !alarm.isEnabled
                 if (alarm.isEnabled)
                 {
+                    alarms.remove(alarm)
                     setAlarm(alarm)
                 }
                 else
                 {
                     cancelAlarm(alarm)
                 }
+                updatePreferences()
             }
             AlarmAction.DELETE ->
             {
