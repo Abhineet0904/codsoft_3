@@ -44,7 +44,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notification = buildNotification(context, alarmTime)
         notificationManager.notify(NOTIFICATION_ID, notification)
 
-        //STOP THE ALARM AFTER IT RINGS FOR 60 SECONDS
+        //STOP THE ALARM AFTER IT RINGS FOR 60 SECONDS.
         Handler(Looper.getMainLooper()).postDelayed({
             stopAlarm(context)
         }, 60*1000)
@@ -81,16 +81,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
 
     private fun snoozeAlarm(context: Context, intent: Intent) {
-        //FIRST STOP THE ALARM
+        //FIRST STOP THE ALARM.
         stopAlarm(context)
 
-        //THEN 5 MINUTES ARE ADDED TO THE TIME AT WHICH THE SNOOZE BUTTON WAS CLICKED
+        //THEN 5 MINUTES ARE ADDED TO THE TIME AT WHICH THE SNOOZE BUTTON WAS CLICKED.
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val snoozeTime = Calendar.getInstance().apply {
             add(Calendar.MINUTE, 5)
         }.timeInMillis
 
-        //THE NEW ALARM IS SET
+        //THE NEW ALARM IS SET.
         val snoozeIntent = Intent(context, AlarmReceiver::class.java)
         snoozeIntent.putExtra("ALARM_TIME", "Snoozed")
         snoozeIntent.putExtra("RINGTONE_URI", intent.getStringExtra("RINGTONE_URI"))
@@ -122,7 +122,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     companion object
     {
-        //INITIALIZE THE MEDIA PLAYER AS A COMPANION OBJECT, INITIALIZING IT IN THE CLASS DOESN'T WORK
+        //INITIALIZE THE MEDIA PLAYER AS A COMPANION OBJECT, INITIALIZING IT IN THE CLASS DOESN'T WORK.
         private val mp = MediaPlayer()
     }
 }

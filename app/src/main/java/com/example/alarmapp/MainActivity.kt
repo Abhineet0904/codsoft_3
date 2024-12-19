@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        //ASK FOR USER PERMISSION TO SEND NOTIFICATIONS IF THIS PERMISSION HAS NOT BEEN GIVEN
+        //ASK FOR USER PERMISSION TO SEND NOTIFICATIONS IF THIS PERMISSION HAS NOT BEEN GIVEN.
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
             PackageManager.PERMISSION_GRANTED)
         {
@@ -65,20 +65,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         /*CREATE A NOTIFICATION CHANNEL AT THE TIME OF OPENING THE APP.
+        HERE THE CHANNEL IS NOT CREATED EVERYTIME AN ALARM GOES OFF.
         THIS METHOD IS PREFERABLE AND MORE EFFICIENT THAN CREATING THE NOTIFICATION CHANNEL IN THE ALARM RECEIVER,
-        SO THAT THE CHANNEL IS NOT CREATED EVERYTIME AN ALARM GOES OFF*/
+        IN WHICH THE NOTIFICATION CHANNEL WILL BE CREATED EVERYTIME AN ALARM GOES OFF. */
         createNotification(this)
 
 
         timeDisplay = findViewById(R.id.textView1)
         dateDisplay = findViewById(R.id.textView2)
-        displayTimeAndDate()                                //DISPLAY CURRENT DATE AND TIME
+        displayTimeAndDate()
 
 
-        displayScheduledAlarms()                            //DISPLAY ALL THE ALARMS THAT HAVE BEEN SCHEDULED BEFORE
+        //DISPLAYS ALL THE ALARMS THAT HAVE BEEN SCHEDULED BEFORE.
+        displayScheduledAlarms()
 
 
-        //ACTIVITY LAUNCHER USER TO CHANGE THE RINGTONE AFTER AN ALARM HAS BEEN SET
+        //ACTIVITY LAUNCHER USER TO CHANGE THE RINGTONE AFTER AN ALARM HAS BEEN SET.
         ringtonePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK && it.data != null)
             {
@@ -90,10 +92,18 @@ class MainActivity : AppCompatActivity() {
                         uri.toString(),
                         true
                     )
-                    cancelAlarm(selectedAlarm)                        //DISABLE THE OLD ALARM
-                    alarms.remove(selectedAlarm)                      //DELETE THE OLD ALARM FROM THE ALARM LIST
-                    setAlarm(updatedAlarm)                            //SET THE NEW ALARM WHICH HAS THE USER CHOSEN RINGTONE
-                    alarmAdapter.notifyDataSetChanged()               //NOTIFY THE ALARM ADAPTER THAT THERE HAS BEEN SOME CHANGE IN THE RECYCLERVIEW THAT DISPLAYS THE ALARMS
+
+                    //DISABLE THE OLD ALARM.
+                    cancelAlarm(selectedAlarm)
+
+                    //DELETE THE OLD ALARM FROM THE ALARM LIST.
+                    alarms.remove(selectedAlarm)
+
+                    //SET THE NEW ALARM WHICH HAS THE RINGTONE CHOSEN BY THE USER.
+                    setAlarm(updatedAlarm)
+
+                    //NOTIFY THE ALARM ADAPTER THAT THERE HAS BEEN A CHANGE IN THE RECYCLERVIEW THAT DISPLAYS ALL THE SCHEDULED ALARMS.
+                    alarmAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -101,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
         alarmList = findViewById(R.id.alarmList)
         alarmAdapter = AlarmAdapter(alarms, this) {alarm, action ->
-            //HANDLES THE TASKS TO BE PERFORMED WHEN THE USER CLICKS ON ANY OF THE ALARMS
+            //HANDLES THE TASKS TO BE PERFORMED WHEN THE USER CLICKS ON ANY OF THE ALARMS.
             handleAlarmAction(alarm, action)
         }
         alarmList.layoutManager = LinearLayoutManager(this)
@@ -113,6 +123,7 @@ class MainActivity : AppCompatActivity() {
         addAlarmButton = findViewById(R.id.addAlarm)
         addAlarmButton.setOnClickListener {
             showTimePicker(null)
+            //ELSE BLOCK OF "showTimePicker()" METHOD WILL BE EXECUTED AFTER THE USER PICKS A TIME.
         }
     }
 
@@ -133,6 +144,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun displayTimeAndDate() {
+
+        //DISPLAY THE CURRENT DATE AND TIME, AND UPDATES IT EVERY SECOND OR EVERY 1000 MILLISECONDS.
         Handler(Looper.getMainLooper()).post(object : Runnable {
             override fun run() {
                 val currentTime = Calendar.getInstance().time
@@ -151,26 +164,42 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayScheduledAlarms() {
 
-        //RETRIEVES THE SHARED PREFERENCES
+        //RETRIEVES THE SHARED PREFERENCES.
         val sharedPreferences = getSharedPreferences("Alarms scheduled", Context.MODE_PRIVATE)
 
-        //FETCHES THE SAVED ALARMS' JSON STRING FROM THE RETRIEVED SHARED PREFERENCES
+        //FETCHES THE SAVED ALARM'S JSON STRING FROM THE RETRIEVED SHARED PREFERENCES.
         val alarmJSON = sharedPreferences.getString("Alarms", null)
 
-        //CHECKS IF THE ALARM DATA EXISTS, OR THERE IS ATLEAST ONE ALARM STORED IN THE SHARED PREFERENCES
+        //CHECKS IF THE ALARM DATA EXISTS, OR THERE IS ATLEAST ONE ALARM STORED IN THE SHARED PREFERENCES.
         if (alarmJSON != null)
         {
             /*"Gson" IS A JAVA/KOTLIN LIBRARY DEVELOPED BY GOOGLE, THAT HELPS IN CONVERTING
             JAVA/KOTLIN OBJECTS TO JSON AND VICE-VERSA.
-            "TypeToken" IS A HELPER CLASS IN THE "Gson" LIBRARY
 
-             */
+            "TypeToken" IS A HELPER CLASS IN THE "Gson" LIBRARY. Gson IS UNABLE TO HANDLE GENERIC TYPES LIKE
+            "MutableList<Alarm>", SO TypeToken IS USED TO PROVIDE NECESSARY TYPE INFORMATION TO Gson AT RUNTIME.
+
+            THE "type" VARIABLE WILL HOLD THE TYPE OBJECT CORRESPONDING TO THE MutableList<Alarm>. THIS IS
+            NECESSARY FOR Gson TO CORRECTLY DESERIALIZE THE JSON STRING INTO A LIST OF "Alarm" OBJECTS.
+
+            "object : TypeToken<MutableList<Alarm>>() {}" CREATES AN ANONYMOUS OBJECT.
+            ".type PROVIDES A Type OBJECT." */
             val type = object : TypeToken<MutableList<Alarm>>() {}.type
+
+
+            //CLEAR THE "Alarm" LIST TO ENSURE THAT IT DOESN'T CONTAIN ANY UNINTENDED OR UPDATED ALARM DATA
             alarms.clear()
 
-            //Gson is a Kotlin library that helps in converting Kotlin objects to JSON and vice-versa
+
+            /*"Gson().fromJSON(alarmJSON, type))" IS USED TO CONVERT THE "alarmJSON" STRING INTO AN OBJECT SPECIFIED
+            BY THE "type" VARIABLE, i.e. "MutableList<Alarm>". THIS PROCESS IS CALLED DESERIALIZATION.
+            "Gson().fromJson(alarmJSON, MutableList<Alarm>)" WILL NOT WORK AT RUNTIME.
+
+            THE DESERIALIZED LIST OF ALARMS IS THEN ADDED TO THE "alarms" LIST.*/
             alarms.addAll(Gson().fromJson(alarmJSON, type))
-            //THE ALARMS ARE DISPLAYED IN ASCENDING ORDER OF THEIR TIME
+
+
+            //THE ALARMS ARE DISPLAYED IN ASCENDING ORDER OF THEIR TIME.
             alarms.sortBy { it.time }
         }
     }
@@ -202,9 +231,10 @@ class MainActivity : AppCompatActivity() {
                 set(Calendar.MILLISECOND, 0)
             }
 
-            /*IF THIS FUNCTION HAS BEEN CALLED WHEN USER IS SETTING A NEW ALARM, THEN ELSE BLOCK IS EXECUTED.
+            /*IF THE "showTimePicker()" METHOD HAS BEEN CALLED WHEN USER IS SETTING A NEW ALARM,
+            THEN THE ELSE BLOCK IS EXECUTED.
             IF THIS FUNCTION HAS BEEN CALLED WHEN THE USER IS CHANGING THE TIME OF AN ALARM,
-            THEN THE OLD ALARM IS DISABLED AND DELETED, AND A NEW ALARM WITH THE SPECIFIED CHANGES IS SET*/
+            THEN THE OLD ALARM IS DISABLED AND DELETED, AND A NEW ALARM WITH THE SPECIFIED CHANGES IS SET. */
             if (oldAlarm != null)
             {
                 val updatedAlarm = Alarm(
@@ -236,7 +266,7 @@ class MainActivity : AppCompatActivity() {
     private fun setAlarm(alarm: Alarm) {
 
         /*IF THE TIME FOR WHICH YOU ARE SETTING THE ALARM HAS ALREADY PASSED,
-        IT SETS THE ALARM FOT THAT TIME BUT FOR THE NEXT DAY*/
+        IT SETS THE ALARM FOT THAT TIME BUT FOR THE NEXT DAY. */
         if (alarm.time < System.currentTimeMillis()) {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = alarm.time
@@ -257,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 24*60*60*1000, pendingIntent)
         //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 24*60*60*1000, pendingIntent)
 
-        //AFTER SETTING THE ALARM, SAVE IT AND DISPLAY IT IN THE RECYCLERVIEW
+        //AFTER SETTING THE ALARM, SAVE IT AND DISPLAY IT IN THE RECYCLERVIEW.
         saveAlarms(alarm)
 
         Toast.makeText(this, "Alarm set for ${SimpleDateFormat("HH:mm")
@@ -294,6 +324,7 @@ class MainActivity : AppCompatActivity() {
             AlarmAction.CHANGE_TIME ->
             {
                 showTimePicker(alarm)
+                //IF BLOCK OF "showTimePicker()" METHOD WILL BE EXECUTED AFTER THE USER PICKS A TIME.
             }
             AlarmAction.CHANGE_RINGTONE ->
             {
@@ -301,6 +332,7 @@ class MainActivity : AppCompatActivity() {
                 val ringtoneIntent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
                     putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
                     putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Ringtone")
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, RingtoneManager.getValidRingtoneUri(this@MainActivity))
                 }
                 ringtonePicker.launch(ringtoneIntent)
 
@@ -308,17 +340,22 @@ class MainActivity : AppCompatActivity() {
             AlarmAction.TOGGLE ->
             {
                 /*WHEN USER SWITCHES THE TOGGLE ON/OFF,
-                UPDATE THE "isEnabled" ATTRIBUTE OF THE "Alarm" CLASS TO THE OPPOSITE OF IT'S ORIGINAL VALUE*/
+                UPDATE THE "isEnabled" ATTRIBUTE OF THE "Alarm" OBJECT TO THE OPPOSITE OF IT'S ORIGINAL VALUE. */
                 alarm.isEnabled = !alarm.isEnabled
                 if (alarm.isEnabled)
                 {
+                    //IF A DISABLED ALARM IS ENABLED AGAIN, DELETE IT AND SET IT AGAIN.
                     alarms.remove(alarm)
                     setAlarm(alarm)
                 }
                 else
                 {
+                    //DISABLE THE ALARM.
                     cancelAlarm(alarm)
                 }
+
+                /*WHETHER THE ALARM IS ENABLED OR DISABLED, THE SHARED PREFERENCES THAT STORES
+                THESE ALARMS ARE UPDATED WITH THAT ALARM'S NEW STATUS. */
                 updatePreferences()
             }
             AlarmAction.DELETE ->
