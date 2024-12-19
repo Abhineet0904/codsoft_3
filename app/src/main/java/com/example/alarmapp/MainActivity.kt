@@ -211,14 +211,12 @@ class MainActivity : AppCompatActivity() {
 
         val currentTime = Calendar.getInstance().time
         val currentHour = SimpleDateFormat("HH").format(currentTime)
-        //val currentMinute = SimpleDateFormat("mm").format(currentTime)
 
         val timePicker = MaterialTimePicker.Builder()
             .setTitleText("Select time")
             .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
             .setTimeFormat(TimeFormat.CLOCK_24H)
             .setHour(currentHour.toInt()+1)
-            //.setMinute(currentMinute.toInt())
             .build()
         timePicker.show(supportFragmentManager,"alarmPicker")
 
@@ -284,8 +282,6 @@ class MainActivity : AppCompatActivity() {
             intent, PendingIntent.FLAG_IMMUTABLE)
 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 24*60*60*1000, pendingIntent)
-        //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 24*60*60*1000, pendingIntent)
 
         //AFTER SETTING THE ALARM, SAVE IT AND DISPLAY IT IN THE RECYCLERVIEW.
         saveAlarms(alarm)
