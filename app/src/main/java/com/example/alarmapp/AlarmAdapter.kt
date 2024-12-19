@@ -13,7 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Date
 
-class AlarmAdapter (private var alarms: MutableList<Alarm>,
+class AlarmAdapter (
+    private var alarms: MutableList<Alarm>,
     private val context: Context,
     private val onAlarmAction: (Alarm, AlarmAction) -> Unit
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
