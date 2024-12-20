@@ -245,10 +245,10 @@ class MainActivity : AppCompatActivity() {
                     oldAlarm.ringtone,
                     oldAlarm.isEnabled
                 )
-                setAlarm(updatedAlarm)
                 cancelAlarm(oldAlarm)
                 alarms.remove(oldAlarm)
-                alarmAdapter.notifyDataSetChanged()
+                setAlarm(updatedAlarm)
+                //alarmAdapter.notifyDataSetChanged()
                 updatePreferences()
             }
             else
@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /*PENDING INTENT GRANTS ANOTHER COMPONENT (HERE THE "alarmManager") PERMISSION TO EXECUTE THE "intent"
-        AT A FUTURE TIME.
+        AT A FUTURE TIME, EVEN WHEN THE APP IS CLOSED.
         "PendingIntent.getBroadcast()" IS USED TO SEND A BROADCAST.
         "alarm.time.toInt()" ACTS LIKE A UNIQUE REQUEST CODE THAT IDENTIFIES THE PENDING INTENT. IT IS
         REQUIRED TO DISTINGUISH BETWEEN DIFFERENT ALARMS.
@@ -298,8 +298,8 @@ class MainActivity : AppCompatActivity() {
 
         /*"alarmManager" IS AN INSTANCE OF THE ALARM MANAGER, WHICH IS USED TO SCHEDULE OPERATIONS AT A SPECIFIC TIME.
         "setExactAndAllowWhileIdle()" SCHEDULES THE ALARM TO GO OFF AT THE EXACT SPECIFIED TIME, EVEN IF THE DEVICE
-        IS IDLE OR HAS LOW-POWER.
-        "AlarmManager.RTC_WAKEUP" TRIGGERS THE ALARM BASED ON THE REAL-TIME CLOCK AND WAKES THE DEVICE IF IT IS
+        IS IDLE OR HAS LOW POWER.
+        "AlarmManager.RTC_WAKEUP" TRIGGERS THE ALARM BASED ON THE REAL TIME CLOCK AND WAKES THE DEVICE IF IT IS
         ASLEEP AT THE TIME OF THE ALARM GOING OFF.
         "alarm.time" IS THE TIME IN MILLISECONDS AT WHICH THE "pendingIntent" SHOULD TRIGGERS.
          */
@@ -383,18 +383,18 @@ class MainActivity : AppCompatActivity() {
                 {
                     //DISABLE THE ALARM.
                     cancelAlarm(alarm)
+                    updatePreferences()
                 }
 
                 /*WHETHER THE ALARM IS ENABLED OR DISABLED, THE SHARED PREFERENCES THAT STORES
                 THESE ALARMS ARE UPDATED WITH THAT ALARM'S NEW STATUS. */
-                updatePreferences()
             }
             AlarmAction.DELETE ->
             {
                 cancelAlarm(alarm)
                 alarms.remove(alarm)
-                alarmAdapter.notifyDataSetChanged()
                 updatePreferences()
+                alarmAdapter.notifyDataSetChanged()
             }
         }
     }

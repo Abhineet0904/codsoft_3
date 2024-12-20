@@ -29,6 +29,10 @@
             </intent-filter>
         </activity>
 
+        <!--REGISTERING THE BROADCAST RECEIVER IN THE MANIFEST FILE ALLOWS IT TO
+        RECEIVE BROADCASTS EVEN WHEN THE APP IS NOT OPEN AND RUNNING.
+        REGISTERING THE BROADCAST RECEIVER IN THE CODE WILL MAKE IT WORK ONLY WHEN
+        THE APP IS OPEN AND RUNNING.-->
         <receiver android:name=".AlarmReceiver" />
 
     </application>
