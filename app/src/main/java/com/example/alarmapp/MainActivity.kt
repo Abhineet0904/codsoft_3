@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity() {
                     setAlarm(updatedAlarm)
 
                     //NOTIFY THE ALARM ADAPTER THAT THERE HAS BEEN A CHANGE IN THE RECYCLERVIEW THAT DISPLAYS ALL THE SCHEDULED ALARMS.
-                    //alarmAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -188,6 +187,7 @@ class MainActivity : AppCompatActivity() {
             NECESSARY FOR Gson TO CORRECTLY DESERIALIZE THE JSON STRING INTO A LIST OF "Alarm" OBJECTS.
 
             "object : TypeToken<MutableList<Alarm>>() {}" CREATES AN ANONYMOUS OBJECT.
+
             ".type PROVIDES A Type OBJECT." */
             val type = object : TypeToken<MutableList<Alarm>>() {}.type
 
@@ -198,6 +198,7 @@ class MainActivity : AppCompatActivity() {
 
             /*"Gson().fromJSON(alarmJSON, type))" IS USED TO CONVERT THE "alarmJSON" STRING INTO AN OBJECT SPECIFIED
             BY THE "type" VARIABLE, i.e. "MutableList<Alarm>". THIS PROCESS IS CALLED DESERIALIZATION.
+
             "Gson().fromJson(alarmJSON, MutableList<Alarm>)" WILL NOT WORK AT RUNTIME.
 
             THE DESERIALIZED LIST OF ALARMS IS THEN ADDED TO THE "alarms" LIST.*/
@@ -285,10 +286,14 @@ class MainActivity : AppCompatActivity() {
 
         /*PENDING INTENT GRANTS ANOTHER COMPONENT (HERE THE "alarmManager") PERMISSION TO EXECUTE THE "intent"
         AT A FUTURE TIME, EVEN WHEN THE APP IS CLOSED.
+
         "PendingIntent.getBroadcast()" IS USED TO SEND A BROADCAST.
+
         "alarm.time.toInt()" ACTS LIKE A UNIQUE REQUEST CODE THAT IDENTIFIES THE PENDING INTENT. IT IS
         REQUIRED TO DISTINGUISH BETWEEN DIFFERENT ALARMS.
+
         THE "intent" WILL BE EXECUTED WHEN THE "pendingIntent" IS TRIGGERED.
+
         "PendingIntent.FLAG_IMMUTABLE" MEANS THE pendingIntent CANNOT BE MODIFIED AFTER CREATION.
          */
         val pendingIntent = PendingIntent.getBroadcast(this, alarm.time.toInt(),
@@ -296,12 +301,14 @@ class MainActivity : AppCompatActivity() {
 
 
         /*"alarmManager" IS AN INSTANCE OF THE ALARM MANAGER, WHICH IS USED TO SCHEDULE OPERATIONS AT A SPECIFIC TIME.
+
         "setExactAndAllowWhileIdle()" SCHEDULES THE ALARM TO GO OFF AT THE EXACT SPECIFIED TIME, EVEN IF THE DEVICE
         IS IDLE OR HAS LOW POWER.
+
         "AlarmManager.RTC_WAKEUP" TRIGGERS THE ALARM BASED ON THE REAL TIME CLOCK AND WAKES THE DEVICE IF IT IS
         ASLEEP AT THE TIME OF THE ALARM GOING OFF.
-        "alarm.time" IS THE TIME IN MILLISECONDS AT WHICH THE "pendingIntent" SHOULD TRIGGERS.
-         */
+
+        "alarm.time" IS THE TIME IN MILLISECONDS AT WHICH THE "pendingIntent" SHOULD TRIGGERS. */
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
 
 

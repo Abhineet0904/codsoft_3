@@ -10,17 +10,23 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-
         //CONTEXT REPRESENTS THE CURRENT STATE OF THE APPLICATION.
+
+
         //DETERMINES WHAT ACTION WAS RECEIVED AND ACCORDINGLY TAKES THE APPROPRIATE ACTION.
         when (intent.action)
         {
@@ -54,6 +60,16 @@ class AlarmReceiver : BroadcastReceiver() {
             prepare()
             start()
         }
+
+
+        /*START VIBRATION. THE VIBRATION OCCURS FOR 1 SECOND AND THEN STOPS FOR 1 SECOND.
+        THIS CYCLE REPEATS INDEFINITELY, UNTIL "stopAlarm()" METHOD IS CALLED. */
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vibration = VibrationEffect.createWaveform(
+            longArrayOf(0, 1000, 1000),
+            0
+        )
+        vibrator.vibrate(vibration)
 
 
         //FETCH THE SYSTEM LEVEL NOTIFICATION SERVICE.
@@ -95,8 +111,7 @@ class AlarmReceiver : BroadcastReceiver() {
         )
 
         /*NOTIFICATION IS DISPLAYED WITH A SNOOZE AND STOP BUTTON.
-        CLICKING THE SNOOZE BUTTON WILL MAKE THE PENDING INTENT EXECUTE THE "snoozeIntent"
-         */
+        CLICKING THE SNOOZE BUTTON WILL MAKE THE PENDING INTENT EXECUTE THE "snoozeIntent". */
         return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.baseline_alarm_24)
             .setContentTitle("Alarm")
@@ -134,9 +149,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeTime, pendingIntent)
-
-        //val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        //notificationManager.cancel(NOTIFICATION_ID)
     }
 
 
@@ -150,6 +162,9 @@ class AlarmReceiver : BroadcastReceiver() {
             mp.release()
         }
 
+
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator.cancel()
 
         //CANCEL THE ALARM NOTIFICATION.
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
