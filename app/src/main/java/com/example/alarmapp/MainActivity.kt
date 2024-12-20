@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                     setAlarm(updatedAlarm)
 
                     //NOTIFY THE ALARM ADAPTER THAT THERE HAS BEEN A CHANGE IN THE RECYCLERVIEW THAT DISPLAYS ALL THE SCHEDULED ALARMS.
-                    alarmAdapter.notifyDataSetChanged()
+                    //alarmAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -248,7 +248,6 @@ class MainActivity : AppCompatActivity() {
                 cancelAlarm(oldAlarm)
                 alarms.remove(oldAlarm)
                 setAlarm(updatedAlarm)
-                //alarmAdapter.notifyDataSetChanged()
                 updatePreferences()
             }
             else
@@ -318,8 +317,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveAlarms(alarm: Alarm) {
         alarms.add(alarm)
-        updatePreferences()
         alarms.sortBy { it.time }
+        updatePreferences()
         alarmAdapter.notifyDataSetChanged()
     }
 
@@ -385,9 +384,6 @@ class MainActivity : AppCompatActivity() {
                     cancelAlarm(alarm)
                     updatePreferences()
                 }
-
-                /*WHETHER THE ALARM IS ENABLED OR DISABLED, THE SHARED PREFERENCES THAT STORES
-                THESE ALARMS ARE UPDATED WITH THAT ALARM'S NEW STATUS. */
             }
             AlarmAction.DELETE ->
             {

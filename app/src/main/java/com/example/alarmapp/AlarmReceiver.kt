@@ -28,7 +28,10 @@ class AlarmReceiver : BroadcastReceiver() {
                 snoozeAlarm(context, intent)
                 Toast.makeText(context, "Alarm snoozed!", Toast.LENGTH_SHORT).show()
             }
-            STOP_ACTION -> stopAlarm(context)
+            STOP_ACTION -> {
+                stopAlarm(context)
+                Toast.makeText(context, "Alarm stopped!", Toast.LENGTH_SHORT).show()
+            }
             else -> triggerAlarm(context, intent)
         }
     }
