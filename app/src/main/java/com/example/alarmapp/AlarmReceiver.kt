@@ -162,9 +162,9 @@ class AlarmReceiver : BroadcastReceiver() {
             mp.release()
         }
 
-
         val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         vibrator.cancel()
+
 
         //CANCEL THE ALARM NOTIFICATION.
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
