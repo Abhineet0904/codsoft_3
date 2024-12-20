@@ -111,15 +111,23 @@ class MainActivity : AppCompatActivity() {
 
 
         alarmList = findViewById(R.id.alarmList)
+
+        //CREATING INSTANCE OF THE "AlarmAdapter" CLASS.
         alarmAdapter = AlarmAdapter(alarms, this) {alarm, action ->
             //HANDLES THE TASKS TO BE PERFORMED WHEN THE USER CLICKS ON ANY OF THE ALARMS.
             handleAlarmAction(alarm, action)
         }
+
+        //ORGANIZE THE RECYCLERVIEW ITEMS IN A VERTICAL SCROLLABLE LIST.
         alarmList.layoutManager = LinearLayoutManager(this)
+
+        //CONNECT THE RECYCLERVIEW AND THE "AlarmAdapter".
         alarmList.adapter = this.alarmAdapter
 
 
+        //INITIALIZE THE ALARM MANAGER COMPONENT.
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
 
         addAlarmButton = findViewById(R.id.addAlarm)
         addAlarmButton.setOnClickListener {
