@@ -87,6 +87,8 @@ class MainActivity : AppCompatActivity() {
                 val uri = it.data!!.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
                 if (uri != null)
                 {
+                    /*CREATE A NEW ALARM WITH SAME TIME AND STATUS, BUT THE RINGTONE WILL BE
+                    THE ONE THAT WAS JUST CHOSEN BY THE USER. */
                     val updatedAlarm = Alarm(
                         selectedAlarm.time,
                         uri.toString(),
@@ -235,7 +237,7 @@ class MainActivity : AppCompatActivity() {
             /*IF THE "showTimePicker()" METHOD HAS BEEN CALLED WHEN USER IS SETTING A NEW ALARM,
             THEN THE ELSE BLOCK IS EXECUTED.
             IF THIS FUNCTION HAS BEEN CALLED WHEN THE USER IS CHANGING THE TIME OF AN ALARM,
-            THEN THE OLD ALARM IS DISABLED AND DELETED, AND A NEW ALARM WITH THE SPECIFIED CHANGES IS SET. */
+            THEN THE OLD ALARM IS DISABLED AND DELETED, AND A NEW ALARM WITH THE UPDATED TIME IS SET. */
             if (oldAlarm != null)
             {
                 val updatedAlarm = Alarm(
@@ -281,10 +283,28 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("ALARM_TIME", SimpleDateFormat("HH:mm").format(alarm.time).toString())
         intent.putExtra("RINGTONE_URI", alarm.ringtone)
 
+
+        /*PENDING INTENT GRANTS ANOTHER COMPONENT (HERE THE "alarmManager") PERMISSION TO EXECUTE THE "intent"
+        AT A FUTURE TIME.
+        "PendingIntent.getBroadcast()" IS USED TO SEND A BROADCAST.
+        "alarm.time.toInt()" ACTS LIKE A UNIQUE REQUEST CODE THAT IDENTIFIES THE PENDING INTENT. IT IS
+        REQUIRED TO DISTINGUISH BETWEEN DIFFERENT ALARMS.
+        THE "intent" WILL BE EXECUTED WHEN THE "pendingIntent" IS TRIGGERED.
+        "PendingIntent.FLAG_IMMUTABLE" MEANS THE pendingIntent CANNOT BE MODIFIED AFTER CREATION.
+         */
         val pendingIntent = PendingIntent.getBroadcast(this, alarm.time.toInt(),
             intent, PendingIntent.FLAG_IMMUTABLE)
 
+
+        /*"alarmManager" IS AN INSTANCE OF THE ALARM MANAGER, WHICH IS USED TO SCHEDULE OPERATIONS AT A SPECIFIC TIME.
+        "setExactAndAllowWhileIdle()" SCHEDULES THE ALARM TO GO OFF AT THE EXACT SPECIFIED TIME, EVEN IF THE DEVICE
+        IS IDLE OR HAS LOW-POWER.
+        "AlarmManager.RTC_WAKEUP" TRIGGERS THE ALARM BASED ON THE REAL-TIME CLOCK AND WAKES THE DEVICE IF IT IS
+        ASLEEP AT THE TIME OF THE ALARM GOING OFF.
+        "alarm.time" IS THE TIME IN MILLISECONDS AT WHICH THE "pendingIntent" SHOULD TRIGGERS.
+         */
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
+
 
         //AFTER SETTING THE ALARM, SAVE IT AND DISPLAY IT IN THE RECYCLERVIEW.
         saveAlarms(alarm)
@@ -337,8 +357,12 @@ class MainActivity : AppCompatActivity() {
             {
                 selectedAlarm = alarm
                 val ringtoneIntent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+
+                    //ENSURE THAT ONLY THE ALARM TONES ARE DISPLAYED IN THE PICKER.
                     putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
                     putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Ringtone")
+
+                    //ENSURE THAT RINGTONES WITH VALID URI CAN ONLY BE PICKED.
                     putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, RingtoneManager.getValidRingtoneUri(this@MainActivity))
                 }
                 ringtonePicker.launch(ringtoneIntent)
@@ -380,8 +404,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun cancelAlarm(alarm: Alarm) {
         val intent = Intent(this, AlarmReceiver::class.java)
+
+        /*CREATES A PENDING INTENT THAT MATCHES WITH THE PENDING INTENT OF THAT ALARM,
+        BY USING SAME ID ("alarm.time.toInt()") FOR THIS PENDING INTENT AS THE OLD ONE. */
         val pendingIntent = PendingIntent.getBroadcast(this, alarm.time.toInt(),
             intent, PendingIntent.FLAG_IMMUTABLE)
+
+        //CANCELS THE ALARM'S PENDING INTENT.
         alarmManager.cancel(pendingIntent)
     }
 }
