@@ -1,3 +1,4 @@
+**# Features :**
 Allows users to add, edit and delete alarms.
 The alarms can go off as set, even when the app is not open or running.
 Alarms are displayed in increasing order of their time.
